@@ -3,8 +3,8 @@
     <p v-for="(item, index) in items" :key="index" class="scrollbar-demo-item">
       <div v-if="!item.isEditing">{{ item.content }}</div>
       <el-input v-else v-model="item.content"></el-input>
-      <el-button class="buttom_" type="primary" @click="delete_(index)">删除</el-button>
-      <el-button @click="toggleEditing(item)">修改</el-button>
+      <el-button class="buttom_" type="primary" @click="_delete(index)">删除</el-button>
+      <el-button @click="toggleEditing(item,index)">修改</el-button>
      </p>
   </el-scrollbar>
 </template>
@@ -41,62 +41,42 @@ import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import {ref , onMounted, h} from "vue";
 import contextService from "../apis/contextService.ts";
 import userStore from "../stores/userStore.ts";
+import userService from "../apis/userService";
 const newUserStore = userStore();
-const delete_ = (index: number) => {
-  items.value.splice(index, 1);
-  ElNotification({
-      title: "删除成功",
-      message: h("i", { style: "color: teal" }, "小子,封心锁爱"),
+const responseData = ref("");
+onMounted(async () => {
+        // 发送 GET 请求
+        const response = await contextService.show(userStore.name);
+        responseData.value = response.data;
+        items.value.push({ content: responseData.value, isEditing: false });
     });
-};
-const toggleEditing = (item: { isEditing: boolean; }) => {
-  item.isEditing = !item.isEditing;
-  ElNotification({
-    title: "修改",
-    message: h("i", { style: "color: teal" }, "小子,汗流浃背了吧"),
-  });
-};
 
 const items = ref([
   { content: "我喜欢ximo", isEditing: false },
   { content: "我喜欢蔡部", isEditing: false },
   { content: "我喜欢木木酱", isEditing: false },
 ]);
-onMounted(async () => {
-  const owner_name= newUserStore.userSession.name;
-  console.log(owner_name);
-  const res = await contextService.show(owner_name);
 
-  if (res.data.code === 200 && res.data.msg === "OK") {
-    tableData.value = res.data.data.contact_list;
-  }
-  else if (res.data.code === 200501 && res.data.msg === "参数错误") {
-    ElNotification({
-      title: "失败",
-      message: h("i", { style: "color: teal" }, "参数错误！"),
+const _delete = async (index: number) => {
+  items.value.splice(index, 1);
+  ElNotification({
+      title: "删除成功",
+      message: h("i", { style: "color: teal" }, "小子,封心锁爱"),
     });
-  }
-  else if (res.data.code === 200506 && res.data.msg === "联系人列表为空") {
-    ElNotification({
-      title: "提示",
-      message: h("i", { style: "color: teal" }, "联系人为空！"),
-    });
-  }
-  else {
-    ElNotification({
-      title: "失败",
-      message: h("i", { style: "color: teal" }, "网络错误！"),
-    });
-  }
-});
+    await contextService.delete_(newUserStore.userSession.name, index);
+};
 
-const tableData = ref([]);
 
-const handleRowDelete = (index:number) => {
-  tableData.value.splice(index, 1);
+const toggleEditing = async (item: { isEditing: boolean; content: string},index: number) => {
+  item.isEditing = !item.isEditing;
+  ElNotification({
+    title: "修改",
+    message: h("i", { style: "color: teal" }, "小子,汗流浃背了吧"),
+  });
+  await contextService.update_(newUserStore.userSession.name,index,item.content);
+
 };
 
 </script>
 <style scoped>
 </style>
-../apis/contextService.ts

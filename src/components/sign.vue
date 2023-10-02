@@ -32,12 +32,6 @@ const onSubmit = async () => {
       });
       router.push("/login");
     }
-    else if (res.data.code === 200501 && res.data.msg === "参数错误") {
-      ElNotification({
-        title: "失败",
-        message: h("i", { style: "color: teal" }, "参数错误！"),
-      });
-    }
     else if (res.data.code === 200504 && res.data.msg === "账号已注册") {
       ElNotification({
         title: "失败",
@@ -104,11 +98,6 @@ const clear = () => {
 </template>
 
 <style scoped>
-/* .div {
-  width: 400px;
-  height: 300px;
-  margin-left: 420px;
-} */
 
 .button {
   margin: 40px;

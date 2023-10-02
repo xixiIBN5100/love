@@ -20,7 +20,7 @@
       </el-form-item>
       <el-row justify="center">
         <el-col :span="12">
-          <el-button type="primary" @click="login_" class="button">登录</el-button>
+          <el-button type="primary" @click="login" class="button">登录</el-button>
         </el-col>
         <el-col :span="12">
           <el-button @click="clear" class="button">清空</el-button>
@@ -38,50 +38,18 @@ import loginStore from "../stores/loginStore.ts";
 import userStore from "../stores/userStore.ts";
 import { ElNotification } from "element-plus";
 import router from "../routers";
+import AdministratorStore from "../stores/administratorStore";
 
 const input = ref("");
 const password = ref("");
 const inputkey = ref("");
 const newLoginStore = loginStore();
 const newUserStore = userStore();
-
+const newadministratorStore = AdministratorStore();
 const props = defineProps<{msg: string}>();
 const { msg = "default" } = toRefs(props);
 
 const emit = defineEmits(["clear"]);
-// const input_=toRefs(input);
-// const password_ = toRefs(password);
-// const login = async () =>{
-//   const loginInfo = ref({
-//     phone: input.value,
-//     password: password.value
-//   });
-
-//   const res = await loginSevice.login(input.value)
-// }
-const login_= () => {
-  if (input.value==="144514"&&password.value=="144514"){
-
-const message = "亲爱的" + "144514" + ",欢迎回来！";
-ElNotification({
-  title: "登陆成功！",
-  message: h("i", { style: "color: teal" }, message),
-});
-
-newLoginStore.setLogin(true);
-console.log("登录状态"+newLoginStore.loginSession);
-localStorage.setItem("login", String(true));
-localStorage.setItem("name", String(144514));
-newUserStore.setUserInfo({
-  name: "144514",
-  username: "144514",
-  sex: "homo",
-  major: "演员"
-});
-router.push("/add");
-}
-};
-
 const login= async () => {
   if (input.value === "" || password.value === "") {
     ElNotification({
@@ -105,10 +73,11 @@ if (res.data.msg === "OK" && res.data.code === 200) {
     title: "登陆成功！",
     message: h("i", { style: "color: teal" }, message),
   });
-
+  localStorage.setItem("login", String(true));//先本地仓库设置登录状态,路由守卫调用
+  if(res.data.flag===false)//是普通用户
+  {
   newLoginStore.setLogin(true);
   console.log("登录状态"+newLoginStore.loginSession);
-  localStorage.setItem("login", String(true));
   localStorage.setItem("name", String(responseData.name));
   newUserStore.setUserInfo({
     name: responseData.name,
@@ -116,13 +85,12 @@ if (res.data.msg === "OK" && res.data.code === 200) {
     sex: responseData.sex,
     major: responseData.major
   });
-  if(res.data.flag===1)//是管理员
-  {
+  router.push("/add");//推向用户页面
+}else{//是管理员
   //session鉴权
-  localStorage.setItem("session_id", responseData.sessionId);
-  router.push("/administrator");
-  }else{
-    router.push("/add");
+  newadministratorStore.setLogin(true);
+  newadministratorStore.SessionID = res.data.sessionID;//更新session id
+  router.push("/administrator");//推向管理员页面
   }
 }
 else if (res.data.msg === "参数错误" && res.data.code === 200501) {
@@ -136,6 +104,12 @@ else if (res.data.msg === "用户不存在" && res.data.code === 200502) {
   ElNotification({
     title: "登陆失败！",
     message: h("i", { style: "color: teal" }, "用户不存在"),
+  });
+  return;
+}else{
+  ElNotification({
+    title: "登陆失败！",
+    message: h("i", { style: "color: teal" }, "网络问题"),
   });
   return;
 }

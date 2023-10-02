@@ -18,7 +18,5 @@
   padding: 20px;
   text-align: center;
   font-family: "华文行楷", STXingkai, cursive;
-  /* 其他样式设置 */
-
 }
 </style>

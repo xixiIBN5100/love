@@ -7,13 +7,13 @@ import { ElNotification } from "element-plus";
 const newUserStore = userStore();
 // do not use same name with ref
 const form = reactive({
-  owner_name: newUserStore.userSession.name,
-  connect:"",
+  name: newUserStore.userSession.name,
+  context:"",
   flag: true,//ture为实名表白,false为匿名表白
 });
 
 const onSubmit = async () => {
-  if (form.connect !== "") {
+  if (form.context !== "") {
     const res = await contextService.add(form);
 
     if (res.data.code === 200 && res.data.msg === "OK") {
@@ -55,9 +55,9 @@ const anonymous = () => {
   };
 
 const clear = () => {
-  form.connect="",
+  form.context="",
   form.flag=true,
-  form.owner_name="";
+  form.name="";
   ElNotification({
       title: "冷静成功",
       message: h("i", { style: "color: teal" }, "别急,让我先急"),
@@ -72,7 +72,7 @@ const clear = () => {
     </div>
     <el-form :model="form" label-width="90px">
       <el-form-item label="你想对TA说" >
-        <el-input v-model="form.connect"  type="textarea"/>
+        <el-input v-model="form.context"  type="textarea"/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit" class="button">表白!</el-button>
