@@ -43,6 +43,10 @@ const pushToAdd = () => {
 const pushToShow = () => {
   router.push("/Show");
 };
+
+const pushToCommunity =()=>{
+  router.push("/community");
+}
 </script>
 
 <template>
@@ -61,6 +65,7 @@ const pushToShow = () => {
       <template #title>cancanworld</template>
       <el-menu-item index="2-1" @click="pushToAdd">我要表白</el-menu-item>
       <el-menu-item index="2-2" @click="pushToShow">查看表白</el-menu-item>
+      <el-menu-item index="2-3" @click="pushToCommunity">社区</el-menu-item>
     </el-sub-menu>
     <div class="button_div">
       <div class="button" v-show="!loginSession" :key="1">
