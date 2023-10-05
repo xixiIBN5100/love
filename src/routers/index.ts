@@ -5,6 +5,7 @@ import Add from "../pages/Add.vue";
 import Show from "../pages/Show.vue";
 import Administrator from "../pages/Administrator.vue";
 import Community from"../pages/community.vue";
+import Sign from "../pages/Sign.vue";
 import { ElNotification } from "element-plus";
 
 const routes = [
@@ -51,7 +52,7 @@ const router = createRouter (
 	}
 );
 
- /*router.beforeEach((to, _, next) => {
+ router.beforeEach((to, _, next) => {
  	if (localStorage.getItem("login") === "false") {
  		if (to.path === "/Login") {
  			next();
@@ -68,7 +69,7 @@ const router = createRouter (
 	}else{
 		next();
 	}
- });*/
+ });
 
 
 export default router;
