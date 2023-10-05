@@ -28,11 +28,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref ,computed} from "vue";
-import loginStore from "../stores/loginStore";
 import router from "../routers";
+import { ref, computed } from 'vue';
 import communityService from "../apis/communityService";
-const newloginStore = loginStore();
 const data = ref([
   {
     content:"i love you",
@@ -61,11 +59,8 @@ const Datafiter = computed(()=>{
   });
 });
 let showinput=ref(false);
-const Showinput = async()=>{
-  if(newloginStore.loginSession){
-    router.push ("/Login");
-  }
-  else{
+const inputvalue=ref(" ");
+const Showinput = async()=>{{
     showinput.value=true;
   }
   const commentConent = ref({
@@ -74,8 +69,7 @@ const Showinput = async()=>{
   });
   const { name, content } = commentConent.value;
   const res = await communityService.push(name, content);
-};
-const inputvalue=ref(" ");
+}
 const fill = ref(true);
 function add() {
   if (inputvalue.value.trim() !== "") {
