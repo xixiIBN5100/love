@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref,h } from "vue";
 import router from "../routers";
 import userStore from "../stores/userStore";
 import loginStore from "../stores/loginStore";
 import {storeToRefs} from "pinia";
+import { ElNotification } from "element-plus";
 
 const newUserStore = userStore();
 const newLoginStore = loginStore();
@@ -16,7 +17,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
 };
 
 const pushToOut = () => {
-  localStorage.clear();
+  localStorage.removeItem("login");
   sessionStorage.clear();
   loginSession.value = false;
   userSession.value = {
@@ -26,6 +27,10 @@ const pushToOut = () => {
     major: "未登录",
   };
   router.push("/Login");
+  ElNotification({
+        title: "成功",
+        message: h("i", { style: "color: teal" }, "退出登录"),
+      });
 };
 
 const pushToAdd = () => {
@@ -56,15 +61,15 @@ const pushToCommunity = ()=>{
     </el-sub-menu>
   <el-breadcrumb separator="/" class="left">
     <el-breadcrumb-item :to="{ path: '/Login' }" style="font-size: 25px;">登录</el-breadcrumb-item>
-    <el-breadcrumb-item :to="{ path: 'Sign' }" style="font-size: 25px;">注册</el-breadcrumb-item>
-    <el-breadcrumb-item :to="{path:'Community'}" style="font-size: 25px;">社区</el-breadcrumb-item
+    <el-breadcrumb-item :to="{ path: '/Sign' }" style="font-size: 25px;">注册</el-breadcrumb-item>
+    <el-breadcrumb-item :to="{path:'/Community'}" style="font-size: 25px;">社区</el-breadcrumb-item
     >
     <el-breadcrumb-item style="font-size: 25px;"></el-breadcrumb-item>
   </el-breadcrumb>
       <div v-show="loginSession" :key="2">
         <div style="display: flex ; flex-direction:row">
           <p>亲爱的{{isName}},欢迎回来&ensp;&ensp;</p>
-          <el-button class="ml-2 button" @click="pushToOut" >退出</el-button>
+          <el-button class="ml-2 button" @click="pushToOut" >退出登录</el-button>
         </div>
       </div>
   </el-menu>

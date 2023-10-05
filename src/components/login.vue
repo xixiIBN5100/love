@@ -64,7 +64,6 @@ const login= async () => {
     password: password.value,
     key: inputkey.value
   });
-
   const res = await userService.login(loginInfo.value);
 if (res.data.msg === "OK" && res.data.code === 200) {
   const responseData = res.data.data;
@@ -88,6 +87,7 @@ if (res.data.msg === "OK" && res.data.code === 200) {
   router.push("/add");//推向用户页面
 }else{//是管理员
   //session鉴权
+  localStorage.setItem("administrator", String(true));
   newadministratorStore.setLogin(true);
   newadministratorStore.SessionID = res.data.sessionID;//更新session id
   router.push("/administrator");//推向管理员页面
