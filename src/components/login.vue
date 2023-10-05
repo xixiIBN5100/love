@@ -126,10 +126,10 @@ const clear = () => {
 <style scoped>
 
 .login-box {
-  width: 400px;
+  width: 350px;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 15px solid #ccc;
+  border-radius: 9px;
   background-color: #f8f8f8;
   margin-left: 450px;
 

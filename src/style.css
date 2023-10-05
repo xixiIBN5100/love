@@ -29,6 +29,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-image: url('../联想截图_20231005015713.png')
 }
 
 h1 {

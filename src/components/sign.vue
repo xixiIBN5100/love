@@ -111,5 +111,6 @@ const clear = () => {
   border-radius: 4px;
   background-color: #f8f8f8;
   margin-left: 450px;
+  font-family: "华文行楷", STXingkai, cursive;
 }
 </style>

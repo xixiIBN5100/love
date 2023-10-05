@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import router from "../routers";
-import userStore from "../stores/userStore.ts";
-import loginStore from "../stores/loginStore.ts";
+import userStore from "../stores/userStore";
+import loginStore from "../stores/loginStore";
 import {storeToRefs} from "pinia";
 
 const newUserStore = userStore();
@@ -13,14 +13,6 @@ const isName = localStorage.getItem("name");
 const activeIndex = ref("1");
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
-};
-
-const pushToLogin = () => {
-  router.push("/Login");
-};
-
-const pushToSign = () => {
-  router.push("/Sign");
 };
 
 const pushToOut = () => {
@@ -43,10 +35,9 @@ const pushToAdd = () => {
 const pushToShow = () => {
   router.push("/Show");
 };
-
-const pushToCommunity =()=>{
+const pushToCommunity = ()=>{
   router.push("/community");
-}
+};
 </script>
 
 <template>
@@ -57,34 +48,35 @@ const pushToCommunity =()=>{
       :ellipsis="false"
        @select="handleSelect"
   >
-    <el-menu-item index="0"><div class="flex items-center">
-      <span class="text-large font-600 mr-3"> 表白墙系统 </span>
-    </div></el-menu-item>
-    <div class="flex-grow" />
-    <el-sub-menu index="2">
-      <template #title>cancanworld</template>
+  <el-sub-menu index="2">
+      <template #title>个人中心</template>
       <el-menu-item index="2-1" @click="pushToAdd">我要表白</el-menu-item>
       <el-menu-item index="2-2" @click="pushToShow">查看表白</el-menu-item>
       <el-menu-item index="2-3" @click="pushToCommunity">社区</el-menu-item>
     </el-sub-menu>
-    <div class="button_div">
-      <div class="button" v-show="!loginSession" :key="1">
-        <el-button type="primary" @click="pushToLogin" >登录</el-button>
-        <el-button class="ml-2" @click="pushToSign" >注册</el-button>
-      </div>
+  <el-breadcrumb separator="/" class="left">
+    <el-breadcrumb-item :to="{ path: '/Login' }" style="font-size: 25px;">登录</el-breadcrumb-item>
+    <el-breadcrumb-item :to="{ path: 'Sign' }" style="font-size: 25px;">注册</el-breadcrumb-item>
+    <el-breadcrumb-item :to="{path:'Community'}" style="font-size: 25px;">社区</el-breadcrumb-item
+    >
+    <el-breadcrumb-item style="font-size: 25px;"></el-breadcrumb-item>
+  </el-breadcrumb>
       <div v-show="loginSession" :key="2">
         <div style="display: flex ; flex-direction:row">
           <p>亲爱的{{isName}},欢迎回来&ensp;&ensp;</p>
           <el-button class="ml-2 button" @click="pushToOut" >退出</el-button>
         </div>
       </div>
-    </div>
   </el-menu>
 </template>
 
 <style scoped>
-.flex-grow {
-  flex-grow: 1;
+.left{
+  position: absolute;
+    right:  0;
+    top: 25px;
+    font-family: "华文行楷", STXingkai, cursive;
+
 }
 
 .menu {
@@ -101,4 +93,7 @@ const pushToCommunity =()=>{
 .button {
   margin-top: 12px;
 }
+.el-menu-demo.menu {
+    background-color: rgb(245, 241, 241);
+  }
 </style>

@@ -79,4 +79,10 @@ const toggleEditing = async (item: { isEditing: boolean; content: string},index:
 
 </script>
 <style scoped>
+.scrollbar-demo-item{
+  background-color: rgb(245, 241, 241);
+  font-family:"华文行楷", STXingkai, cursive;
+  font-size: 28px;
+  color: rgb(96, 87, 91);
+}
 </style>
