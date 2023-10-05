@@ -9,7 +9,7 @@ const newUserStore = userStore();
 const form = reactive({
   name: newUserStore.userSession.name,
   context:"",
-  flag: true,//ture为实名表白,false为匿名表白
+  name_state: true,//ture为实名表白,false为匿名表白
 });
 
 const onSubmit = async () => {
@@ -47,21 +47,27 @@ const onSubmit = async () => {
 
 };
 const anonymous = () => {
-    form.flag = false;
+    form.name_state = false;
     ElNotification({
       title: "主打一个暗恋",
       message: h("i", { style: "color: teal" }, "匿名成功"),
     });
   };
 
-const clear = () => {
+const clear_ = () => {
   form.context="",
-  form.flag=true,
+  form.name_state=true,
   form.name="";
   ElNotification({
       title: "冷静成功",
       message: h("i", { style: "color: teal" }, "别急,让我先急"),
     });
+};
+
+const clear = () => {
+  form.context="",
+  form.name_state=true,
+  form.name="";
 };
 </script>
 
@@ -76,7 +82,7 @@ const clear = () => {
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit" class="button">表白!</el-button>
-        <el-button class="button" @click="clear">冷静一下</el-button>
+        <el-button class="button" @click="clear_">冷静一下</el-button>
         <el-button class="button" @click="anonymous">我要匿名</el-button>
       </el-form-item>
     </el-form>

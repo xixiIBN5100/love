@@ -7,7 +7,7 @@ export default class contextService {
 			"headers": {
 				"Content-Type": "application/json",
 			},
-			url:"/api/student/wall-artical/add",
+			url:"/api/student/wall-artical",
 			method: "post",
 			data: data_
 		});
