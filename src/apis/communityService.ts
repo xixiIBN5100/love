@@ -7,7 +7,7 @@ export default class CommunityService{
 			"headers": {
 				"Content-Type": "application/json",
 			},
-			url:"/api/student/wall-artical",
+			url:"https://mock.apifox.cn/m1/3329798-0-default/api/student/wall-artical",
 			method: "GET",
 		});
     }
@@ -15,7 +15,6 @@ export default class CommunityService{
     static async push(
         name:string,
         content:string,
-        id:number,
     ){
         return request({
             "headers":{
@@ -26,7 +25,6 @@ export default class CommunityService{
             params:{
                 name_ : name,
                 content_:content,
-                id_:id,
             }
         });
     }

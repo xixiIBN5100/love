@@ -1,4 +1,3 @@
-
 <template>
   <div class="contain">
     <div style="margin-bottom: 15px">fill: <el-switch v-model="fill" /></div>
@@ -8,11 +7,13 @@
             <span>name</span>
           </div>
         <el-scrollbar style="size: medium;">
-          <p v-for="item in datafilter" :key="item.id">{{ item.content }}</p>
+          <span v-for="item in datafilter" :key="item.id">{{ item.content }}</span>
         </el-scrollbar>
         <el-divider />
         <el-scrollbar max-height="400px">
-            <el-input v-if="showinput" v-model="inputvalue" clearable />
+          <div v-if="showinput">
+            <el-input v-model="inputvalue" clearable />
+          </div>
                 <div v-for="item in Datafiter" :key="item.id" type="textarea" placeholder="说点什么吧">
                   <el-button @click="Showinput" style="margin-top: 25px;">评论</el-button>
                   <el-button v-if="showButton" @click="add" style="margin-top: 25px;">上传</el-button>
@@ -30,9 +31,8 @@
 import { ref ,computed} from "vue";
 import loginStore from "../stores/loginStore";
 import router from "../routers";
-import CommunityService from "../apis/communityService";
+import communityService from "../apis/communityService";
 const newloginStore = loginStore();
-const count = ref(3);
 const data = ref([
   {
     content:"i love you",
@@ -62,17 +62,18 @@ const Datafiter = computed(()=>{
 });
 let showinput=ref(false);
 const Showinput = async()=>{
-  if(newloginStore.loginSession==false){
+  if(newloginStore.loginSession){
     router.push ("/Login");
   }
   else{
-    showinput=ref(true);
+    showinput.value=true;
   }
   const commentConent = ref({
-    content:inputvalue.value,
     name:"李华",
+    content:inputvalue.value
   });
-  const res = await CommunityService.push(commentConent.value);
+  const { name, content } = commentConent.value;
+  const res = await communityService.push(name, content);
 };
 const inputvalue=ref(" ");
 const fill = ref(true);
@@ -83,12 +84,12 @@ function add() {
       content: inputvalue.value,
     };
     Data.value[0].comments.push(newcomment.content);
-    inputvalue.value = "";
+    inputvalue.value = " ";
     showinput.value = false;
   }
 }
 const showButton = computed(() => {
-  return inputvalue.value.trim() !== "";
+  return inputvalue.value.trim() !== " ";
 });
 </script>
 <style scoped>
@@ -104,9 +105,12 @@ const showButton = computed(() => {
   background-color: #f8f8f8;
   border-radius: 4px;
   background: var(--el-color-primary-light-9);
+  z-index: 1;
 }
 .contain {
   overflow: hidden;
   width: 1300px;
+  position: relative;
+  z-index: 1;
 }
 </style>
