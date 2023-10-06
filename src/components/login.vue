@@ -72,6 +72,7 @@ if (res.data.msg === "OK" && res.data.code === 200) {
     title: "登陆成功！",
     message: h("i", { style: "color: teal" }, message),
   });
+  newLoginStore.loginrefer=true;
   localStorage.setItem("login", String(true));//先本地仓库设置登录状态,路由守卫调用
   if(res.data.flag===false)//是普通用户
   {
