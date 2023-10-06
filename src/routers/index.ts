@@ -7,6 +7,8 @@ import Administrator from "../pages/Administrator.vue";
 import Community from"../pages/community.vue";
 import Sign from "../pages/Sign.vue";
 import { ElNotification } from "element-plus";
+import loginStore from "../stores/loginStore";
+import AdministratorStore from "../stores/administratorStore";
 
 const routes = [
 	{
@@ -52,8 +54,10 @@ const router = createRouter (
 	}
 );
 
- router.beforeEach((to, _, next) => {
- 	if (localStorage.getItem("login") === "false") {
+router.beforeEach((to, _, next) => {
+	const newloginstore = loginStore();
+    const newadministratorstore = AdministratorStore();
+ 	if (newloginstore.loginSession === false && newadministratorstore.administrator_loginSession ===false) {
  		if (to.path === "/Login") {
  			next();
  		}else if (to.path === "/Sign"){
@@ -66,8 +70,26 @@ const router = createRouter (
  			});
  			next("/Login");
  		}
-	}else{
-		next();
+	}else if(newloginstore.loginSession === true && newadministratorstore.administrator_loginSession ===false){
+		if(to.path ==="/administrator"){
+			ElNotification({
+				title: "失败",
+				message: h("i", { style: "color: teal" }, "没权限"),
+			});
+			next("/Add");
+		}else{
+			next();
+		}
+	}else if(newloginstore.loginSession === false && newadministratorstore.administrator_loginSession === true){
+		if(to.path === "/administrator" || to.path === "/Login"){
+			next();
+		}else{
+			ElNotification({
+				title: "失败",
+				message: h("i", { style: "color: teal" }, "先退出管理员登录"),
+			});
+			next("/administrator");
+		}
 	}
  });
 

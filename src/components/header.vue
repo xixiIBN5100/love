@@ -4,23 +4,23 @@ import router from "../routers";
 import userStore from "../stores/userStore";
 import loginStore from "../stores/loginStore";
 import {storeToRefs} from "pinia";
+import AdministratorStore from "../stores/administratorStore";
 
 const newUserStore = userStore();
 const newLoginStore = loginStore();
+const newadministratorStore = AdministratorStore();
 const { loginSession } = storeToRefs(newLoginStore);
-const {loginrefer} = storeToRefs(newLoginStore);
 const { userSession } = storeToRefs(newUserStore);
 const isName = localStorage.getItem("name");
 const activeIndex = ref("1");
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
 };
-
 const pushToOut = () => {
   localStorage.clear();
   sessionStorage.clear();
+  newadministratorStore.administrator_loginSession = false;
   loginSession.value = false;
-  loginrefer.value=false;
   userSession.value = {
     name: "未登录",
     username: "未登录",
@@ -31,13 +31,11 @@ const pushToOut = () => {
 };
 
 const pushInto =()=>{
-  loginrefer.value=true;
   router.push("/Login");
 };
 const PushInto=()=>{
-  loginrefer.value=true;
-  router.push("/Sign")
-}
+  router.push("/Sign");
+};
 
 const pushToAdd = () => {
   router.push("/Add");
@@ -67,17 +65,17 @@ const pushToCommunity = ()=>{
       <el-menu-item index="2-3" @click="pushToCommunity">社区</el-menu-item>
     </el-sub-menu>
   <el-breadcrumb separator="/" class="left">
-    <el-breadcrumb-item :to="{ path: '/Login' }" v-show="!loginrefer" style="font-size: 25px;" @click="pushInto">
+    <el-breadcrumb-item :to="{ path: '/Login' }" v-show="!newLoginStore.loginSession && !newadministratorStore.administrator_loginSession" style="font-size: 25px;" @click="pushInto">
       登录</el-breadcrumb-item>
-    <el-breadcrumb-item :to="{ path: 'Sign' }" v-show="!loginrefer" style="font-size: 25px;" @click="PushInto">
+    <el-breadcrumb-item :to="{ path: 'Sign' }" v-show="!newLoginStore.loginSession && !newadministratorStore.administrator_loginSession" style="font-size: 25px;" @click="PushInto">
       注册</el-breadcrumb-item>
-    <el-breadcrumb-item :to="{ path: '/Login' }" v-show="loginrefer" style="font-size: 24px;" @click="pushToOut">
+    <el-breadcrumb-item :to="{ path: '/Login' }" v-show="newLoginStore.loginSession || newadministratorStore.administrator_loginSession" style="font-size: 24px;" @click="pushToOut">
       退出登录</el-breadcrumb-item>
       <el-breadcrumb-item :to="{path:'Community'}" style="font-size: 25px;">社区</el-breadcrumb-item
     >
     <el-breadcrumb-item style="font-size: 25px;"></el-breadcrumb-item>
   </el-breadcrumb>
-      <div v-show="loginrefer" :key="2">
+      <div v-show="newLoginStore.loginSession" :key="2">
         <div style="display: flex ; flex-direction:row">
           <p>亲爱的{{isName}},欢迎回来&ensp;&ensp;</p>
         </div>
