@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { reactive , h } from "vue";
-import contextService from "../apis/contextService.ts";
-import userStore from "../stores/userStore.ts";
+import contextService from "../apis/contextService";
+import userStore from "../stores/userStore";
 import { ElNotification } from "element-plus";
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref } from "vue"
 
 const newUserStore = userStore();
 // do not use same name with ref
@@ -15,21 +17,62 @@ const form = reactive({
 const onSubmit = async () => {
   if (form.context !== "") {
     const res = await contextService.add(form);
-
     if (res.data.code === 200 && res.data.msg === "OK") {
+      ElMessageBox.confirm(
+    '请确认表白内容无误且为实名表白',
+    {
+      confirmButtonText: 'OK',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      ElMessage({
+        type: 'success',
+        message: '表白成功',
+      })
       console.log(form);
       ElNotification({
         title: "成功",
         message: h("i", { style: "color: teal" }, "实名表白成功！"),
       });
       clear();
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消成功',
+      })
+    })
     }else  if (res.data.code === 201 && res.data.msg === "OK") {
+      ElMessageBox.confirm(
+    '请确认表白内容无误且为匿名表白',
+    {
+      confirmButtonText: 'OK',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      ElMessage({
+        type: 'success',
+        message: '表白成功',
+      })
       console.log(form);
       ElNotification({
         title: "成功",
         message: h("i", { style: "color: teal" }, "匿名表白成功！"),
       });
       clear();
+      condition.value="我要匿名"
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消成功',
+      })
+    })
+     
     }
     else {
       ElNotification({
@@ -44,37 +87,38 @@ const onSubmit = async () => {
       message: h("i", { style: "color: teal" }, "表白失败,请输入表白内容！"),
     });
   }
-
 };
+const condition = ref("我要匿名")
 const anonymous = () => {
-    form.name_state = false;
+     form.name_state = !form.name_state;
+    if(!form.name_state){
     ElNotification({
       title: "主打一个暗恋",
       message: h("i", { style: "color: teal" }, "匿名成功"),
     });
+    condition.value="取消匿名";
+  }
+    else{
+      ElNotification({
+      title: "取消匿名成功",
+      message: h("i", { style: "color: teal" }, "取消匿名成功"),
+    });
+    condition.value ="我要匿名";
+    }
   };
 
-const clear_ = () => {
-  form.context="",
-  form.name_state=true,
-  form.name="";
-  ElNotification({
-      title: "冷静成功",
-      message: h("i", { style: "color: teal" }, "别急,让我先急"),
-    });
+const clear = () => {
+  form.context = "";
+  form.name_state = true;
+  form.name = "";
 };
 
-const clear = () => {
-  form.context="",
-  form.name_state=true,
-  form.name="";
-};
 </script>
 
 <template>
   <div class="love_box">
-    <div style="text-align: center ; margin-left: 90px">
-      <h3>开始一场激动人心的表白吧</h3>
+    <div style="text-align: center; margin-left: 90px;">
+      <h2>开始一场激动人心的表白吧</h2>
     </div>
     <el-form :model="form" label-width="90px">
       <el-form-item label="你想对TA说" >
@@ -83,7 +127,9 @@ const clear = () => {
       <el-form-item>
         <el-button type="primary" @click="onSubmit" class="button">表白!</el-button>
         <el-button class="button" @click="clear_">冷静一下</el-button>
-        <el-button class="button" @click="anonymous">我要匿名</el-button>
+        <el-button class="button" @click="anonymous">
+          <i :class="{'el-icon-user-solid': form.name_state, 'el-icon-user': !form.name_state}"></i>
+          {{ condition }}</el-button>
       </el-form-item>
     </el-form>
   </div>

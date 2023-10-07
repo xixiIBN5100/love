@@ -9,6 +9,9 @@ export default class CommunityService{
 			},
 			url:"https://mock.apifox.cn/m1/3329798-0-default/api/student/wall-artical",
 			method: "GET",
+            params:{
+                id_:id,
+            }
 		});
     }
 
