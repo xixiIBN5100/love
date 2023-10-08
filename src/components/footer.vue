@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-    看什么看,快去表白
+    青青子衿,悠悠我心
     <button @click="toggleSound" class="btn">{{ isPlaying ? '暂停音乐' : '播放音乐' }}</button>
   </div>
 </template>

@@ -54,11 +54,16 @@ const onSubmit = async () => {
 };
 
 const clear = () => {
+      form.name="";
       form.username= "";
       form.sex= "";
       form.major= "";
       form.password= "";
       form.confirm_password= "";
+      ElNotification({
+      title: "成功",
+      message: h("i", { style: "color: teal" }, "清空成功"),
+    });
 };
 </script>
 

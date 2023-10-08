@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref ,computed } from "vue";
 import router from "../routers";
 import userStore from "../stores/userStore";
 import loginStore from "../stores/loginStore";
@@ -29,7 +29,21 @@ const pushToOut = () => {
   };
   router.push("/Login");
 };
-
+const state = computed(() => {
+  if (newLoginStore.loginSession) {
+    return "用户中心";
+  } else if(newadministratorStore.administrator_loginSession){
+    return "管理中心";
+  }else{
+    return "未登录";
+  }
+});
+const pushToadministrator_ =()=>{
+  router.push("/administrator_");
+};
+const pushToadministrator =()=>{
+  router.push("/administrator");
+};
 const pushInto =()=>{
   router.push("/Login");
 };
@@ -59,20 +73,20 @@ const pushToCommunity = ()=>{
        @select="handleSelect"
   >
   <el-sub-menu index="2">
-      <template #title>个人中心</template>
-      <el-menu-item index="2-1" @click="pushToAdd">我要表白</el-menu-item>
-      <el-menu-item index="2-2" @click="pushToShow">查看表白</el-menu-item>
-      <el-menu-item index="2-3" @click="pushToCommunity">社区</el-menu-item>
+      <template #title>{{ state }}</template>
+      <el-menu-item index="2-1" @click="pushToAdd" v-show="newLoginStore.loginSession">我要表白</el-menu-item>
+      <el-menu-item index="2-2" @click="pushToShow"  v-show="newLoginStore.loginSession">查看表白</el-menu-item>
+      <el-menu-item index="2-3" @click="pushToCommunity"  v-show="newLoginStore.loginSession">社区</el-menu-item>
+      <el-menu-item index="2-1" @click="pushToadministrator" v-show="newadministratorStore.administrator_loginSession">管理表白</el-menu-item>
+      <el-menu-item index="2-2" @click="pushToadministrator_"  v-show="newadministratorStore.administrator_loginSession">管理用户</el-menu-item>
     </el-sub-menu>
   <el-breadcrumb separator="/" class="left">
     <el-breadcrumb-item :to="{ path: '/Login' }" v-show="!newLoginStore.loginSession && !newadministratorStore.administrator_loginSession" style="font-size: 25px;" @click="pushInto">
       登录</el-breadcrumb-item>
-    <el-breadcrumb-item :to="{ path: 'Sign' }" v-show="!newLoginStore.loginSession && !newadministratorStore.administrator_loginSession" style="font-size: 25px;" @click="PushInto">
+    <el-breadcrumb-item :to="{ path: '/Sign' }" v-show="!newLoginStore.loginSession && !newadministratorStore.administrator_loginSession" style="font-size: 25px;" @click="PushInto">
       注册</el-breadcrumb-item>
     <el-breadcrumb-item :to="{ path: '/Login' }" v-show="newLoginStore.loginSession || newadministratorStore.administrator_loginSession" style="font-size: 24px;" @click="pushToOut">
       退出登录</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{path:'Community'}" style="font-size: 25px;">社区</el-breadcrumb-item
-    >
     <el-breadcrumb-item style="font-size: 25px;"></el-breadcrumb-item>
   </el-breadcrumb>
       <div v-show="newLoginStore.loginSession" :key="2">

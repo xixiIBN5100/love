@@ -7,7 +7,7 @@ export default class CommunityService{
 			"headers": {
 				"Content-Type": "application/json",
 			},
-			url:"https://mock.apifox.cn/m1/3329798-0-default/api/student/wall-artical",
+			url:"/api/student/wall-artical",
 			method: "GET",
             params:{
                 id_:id,
