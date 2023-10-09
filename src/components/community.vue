@@ -29,7 +29,7 @@
 </template>
 <script setup lang="ts">
 import router from "../routers";
-import { ref, computed } from 'vue';
+import { ref, computed } from "vue";
 import communityService from "../apis/communityService";
 const data = ref([
   {
@@ -58,7 +58,7 @@ const Datafiter = computed(()=>{
     );
   });
 });
-let showinput=ref(false);
+const showinput=ref(false);
 const inputvalue=ref(" ");
 const Showinput = async()=>{{
     showinput.value=true;
@@ -69,7 +69,7 @@ const Showinput = async()=>{{
   });
   const { name, content } = commentConent.value;
   const res = await communityService.push(name, content);
-}
+};
 const fill = ref(true);
 function add() {
   if (inputvalue.value.trim() !== "") {

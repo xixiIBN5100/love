@@ -54,7 +54,7 @@ const router = createRouter (
 	}
 );
 
-router.beforeEach((to, _, next) => {
+/*router.beforeEach((to, _, next) => {
 	const newloginstore = loginStore();
     const newadministratorstore = AdministratorStore();
  	if (newloginstore.loginSession === false && newadministratorstore.administrator_loginSession ===false) {
@@ -91,7 +91,7 @@ router.beforeEach((to, _, next) => {
 			next("/administrator");
 		}
 	}
- });
+ });*/
 
 
 export default router;

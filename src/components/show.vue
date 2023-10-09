@@ -1,145 +1,131 @@
 <template>
-  <div id="main">
- <el-tabs :tab-position="tabPosition"  class="demo-tabs">
-    <el-tab-pane label="已发表">
-      <div class="demo-collapse">
-    <el-collapse v-model="items" @change="handleChange">
-      <el-collapse-item v-for="(item, index) in items" :key="index" :title="item.date" :name="index"
-  style="width: 1000px;height: auto;">
-  <p class="scrollbar-demo-item">
-    <div v-if="!item.isEditing && item.content">{{ item.content }}</div>
-    <div v-else-if="!item.isEditing"></div>
-    <el-input v-else v-model="item.content"></el-input>
-    <el-button class="buttom_" type="primary" @click="_delete(index)">删除</el-button>
-  </p>
-</el-collapse-item>
-    </el-collapse>
-  </div></el-tab-pane>
-    <el-tab-pane label="草稿箱">
-  <div class="demo-collapse">
-    <el-collapse v-model="items" @change="handleChange">
-      <el-collapse-item v-for="(item, index) in itemes" :key="index" :title="item.date" :name="index"
-  style="width: 1000px;height: auto;margin-left: 15px;">
-  <p class="scrollbar-demo-item">
-    <div v-if="!item.isEditing && item.content">{{ item.content }}</div>
-    <div v-else-if="!item.isEditing"></div>
-    <el-input v-else v-model="item.content"></el-input>
-    <el-button class="buttom_" type="primary" @click="__delete(index)">删除</el-button>
-    <el-button @click="toggleEditing(item,index)">修改</el-button>
-  </p>
-</el-collapse-item>
-    </el-collapse>
-  </div>
-  </el-tab-pane>
-  </el-tabs>
-</div>
+  <el-table :data="filterTableData" style="width: 100%" class="table">
+    <el-table-column label="表白状态" prop="state" />
+    <el-table-column label="表白内容" prop="context" />
+    <el-table-column align="right">
+      <template #header>
+        <el-input v-model="search" size="small" placeholder="Type to search" />
+      </template>
+      <!-- #default 是作用域插槽的名称，它表示默认的插槽，即没有特定名称的插槽。"scope" 是作用域插槽的参数，它表示在父组件中传递给子组件的数据。
+      在这段代码中，作用域插槽的参数 scope 包含了父组件传递给子组件的数据。在模板中，你可以通过 scope 对象来访问这些数据。
+      例如，scope.$index 表示当前循环项的索引，scope.row 表示当前循环项的数据。
+      因此，在这个例子中，<el-button> 组件通过作用域插槽获取到了父组件中传递过来的索引和数据，
+      并且在点击按钮时将它们传递给对应的事件处理函数 handleEdit 和 handleDelete。这样就实现了根据点击的行进行编辑或删除操作的功能。 -->
+      <template #default="scope">
+        <el-button size="small" type="primary" text @click="handleEdit(scope.$index, scope.row)">
+          修改
+        </el-button>
+        <el-button size="small" type="danger" @click="handleDelete(scope.$index)">
+          删除
+        </el-button>
+      </template>
+    </el-table-column>
+  </el-table>
+  <el-dialog v-model="dialogVisible" title="修改" width="30%" draggable>
+    <el-input v-model="editedRow.context" placeholder="请输入修改的内容" />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveEditedData">
+          确认修改
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog v-model="dialogVisible_" title="删除" width="30%" draggable>
+    <el-text class="mx-1" type="danger">此操作不可逆</el-text>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible_ = false">取消</el-button>
+        <el-button type="primary" @click="handleDelete_comfrim()">
+          确认删除
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
-<style scoped>
-.scrollbar-demo-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50px;
-  width: 900px;
-  margin: 10px;
-  text-align: center;
-  border-radius: 4px;
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
-}
-
-.scrollbar-demo-item div{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100%;
-  width:100%;
-}
-
-</style>
-
-
-
 <script lang="ts" setup>
-import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
-import {ref , onMounted, h} from "vue";
-import contextService from "../apis/contextService.ts";
-import userStore from "../stores/userStore.ts";
+import { computed, reactive, ref ,onMounted} from "vue";
+import contextService from "../apis/contextService";
+import { ElMessage } from "element-plus";
+import loginStore from "../stores/loginStore";
+import userStore from "../stores/userStore";
+import { rowContextKey } from "element-plus/es/components/index.js";
 import userService from "../apis/userService";
+
 const newUserStore = userStore();
-const responseData = ref("");
+const newLoginStore = loginStore();
+const dialogVisible_ = ref(false);
 onMounted(async () => {
-        // 发送 GET 请求
-        const response = await contextService.show(userStore.name);
-        responseData.value = response.data;
-        items.value.push({ date:"",content: responseData.value, isEditing: false });
-    });
-
-    const items = ref([
-  {date:"九月", content: "我喜欢ximo", isEditing: false },
-  {date:"十月", content: "我喜欢蔡部", isEditing: false },
-  { date:"十一月",content: "我喜欢木木酱", isEditing: false },
-]);
-const itemes = ref([
-  {date:"九月", content: "我喜欢ximo", isEditing: false },
-  {date:"十月", content: "我喜欢蔡部", isEditing: false },
-  { date:"十一月",content: "我喜欢木木酱", isEditing: false },
-]);
+  const response = await contextService.show(newUserStore.userSession.name);
+  const mydata = response.data; // 返回的数据在response的data属性中
+  // 创建新的User对象
+  const newUser = {
+    state: mydata.state,
+    context: mydata.context,
+  };
+  // 将newUser插入到tableData数组中
+  tableData.push(newUser);
+});
 
 
-const _delete = async (index: number) => {
-  items.value.splice(index, 1);
-  ElNotification({
-      title: "删除成功",
-      message: h("i", { style: "color: teal" }, "小子,封心锁爱"),
-    });
-    await contextService.delete_(newUserStore.userSession.name, index);
-};
-const __delete = async(index:number)=>{
-  itemes.value.splice(index,1);
-  ElNotification({
-      title: "删除成功",
-      message: h("i", { style: "color: teal" }, "小子,封心锁爱"),
-    });
+interface User {
+  state: string
+  context: string
 }
 
+const tableData: User[] = reactive([
+  {
+    state: "匿名状态",
+    context: "博爱",
+  },
+  {
+    state: "实名状态",
+    context: "我博爱",
+  },
+]);
 
-const toggleEditing = async (item: { isEditing: boolean; content: string},index: number) => {
-  item.isEditing = !item.isEditing;
-  ElNotification({
-    title: "修改",
-    message: h("i", { style: "color: teal" }, "小子,汗流浃背了吧"),
-  });
-  await contextService.update_(newUserStore.userSession.name,index,item.content);
+const search = ref("");
+const filterTableData = computed(() =>
+  tableData.filter(
+    (data) =>
+      !search.value ||
+      data.context.toLowerCase().includes(search.value.toLowerCase())
+  )
+);
 
+const dialogVisible = ref(false);
+const editedRow = ref<User>({state: "", context: ""});
+const editedRowIndex = ref(-1);
+
+const handleEdit = (index: number, row: User) => {
+  dialogVisible.value = true;
+  editedRowIndex.value = index;
+  editedRow.value = { ...row };//展开运算符拷贝数据
 };
-const handleChange = (val: string[]) => {
-  console.log(val)
-}
 
+const saveEditedData = async() => {
+  console.log("Save edited data:", editedRow.value);
+  Object.assign(tableData[editedRowIndex.value], editedRow.value);//更新修改后的数据
+  dialogVisible.value = false;
+  await contextService.update_(newUserStore.userSession.name,deleteindex.value,editedRow.value.context);
+  ElMessage.success("保存成功！");
+};
+const deleteindex = ref(-1);
+const handleDelete = (index: number) => {
+   deleteindex.value = index;
+  dialogVisible_.value = true;
+};
+const handleDelete_comfrim = async() => {
+  dialogVisible_.value = false;
+  tableData.splice(deleteindex.value,1);
+  await contextService.delete_(newUserStore.userSession.name,deleteindex.value);
+};
 </script>
-<style scoped>
-main{
-  position: fixed;
-  height: 1000px;
-  margin-top: 2px;
-  top: 2px;
-  left: 3px;
-}
-.scrollbar-demo-item{
-  background-color: rgb(245, 241, 241);
-  font-family:"华文行楷", STXingkai, cursive;
-  font-size: 28px;
-  color: rgb(96, 87, 91);
-}
-.demo-tabs > .el-tabs__content {
-  padding: 32px;
-  color: rgb(96, 87, 91);
-  font-family:"华文行楷", STXingkai, cursive;
-  font-size: 32px;
-  font-weight: 600;
-  height: 1000px;
-  top: 3px;
+<style>
+.table{
+  margin-left: 50px;
+  margin-bottom: 300px;
 }
 </style>

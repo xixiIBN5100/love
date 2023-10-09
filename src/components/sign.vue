@@ -30,7 +30,7 @@ const onSubmit = async () => {
         title: "成功",
         message: h("i", { style: "color: teal" }, "注册成功！"),
       });
-      router.push("/login");
+      router.push("/Login");
     }
     else if (res.data.code === 200504 && res.data.msg === "账号已注册") {
       ElNotification({

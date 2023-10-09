@@ -29,7 +29,7 @@ export default class contextService {
 	}
 	static async delete_ (
 		owner_name: string,
-		id_: number,
+		index: number,
 	) {
 		return request({
 			"headers": {
@@ -39,13 +39,13 @@ export default class contextService {
 			method: "delete",
 			params: {
 				name: owner_name,
-				id: id_
+				id: index
 			}
 		});
 	}
 	static async update_ (
 		owner_name: string,
-		id_: number,
+		index: number,
 		updateconext: string,
 	) {
 		return request({
@@ -56,7 +56,7 @@ export default class contextService {
 			method: "put",
 			params: {
 				name: owner_name,
-				id: id_,
+				id: index,
 			},
 			data: updateconext
 		});
