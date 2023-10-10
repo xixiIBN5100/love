@@ -2,10 +2,9 @@ import axios, { AxiosRequestConfig } from "axios";
 
 const request = (config: AxiosRequestConfig<unknown>) => {
   const instance = axios.create({
-    baseURL: "http://175.27.251.203:8080",
+    baseURL: "https://mock.apifox.cn/m1/3329798-0-default",
     timeout: 1000
   });
-   axios.defaults.withCredentials = true;
 
   const sessionId = localStorage.getItem("sessionId"); // 从localStorage 提取 Session ID
 

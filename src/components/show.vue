@@ -1,4 +1,9 @@
 <template>
+  <div class="but">
+  <el-button class = "a" v-if="lastDeletedData" size="small" type="info" @click="handleUndoLastDelete">
+      撤回
+    </el-button>
+  </div>
   <el-table :data="filterTableData" style="width: 100%" class="table">
     <el-table-column label="表白状态" prop="state" />
     <el-table-column label="表白内容" prop="context" />
@@ -33,7 +38,7 @@
     </template>
   </el-dialog>
   <el-dialog v-model="dialogVisible_" title="删除" width="30%" draggable>
-    <el-text class="mx-1" type="danger">此操作不可逆</el-text>
+    <el-text class="mx-1" type="danger">此操作可逆</el-text>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible_ = false">取消</el-button>
@@ -53,7 +58,6 @@ import loginStore from "../stores/loginStore";
 import userStore from "../stores/userStore";
 import { rowContextKey } from "element-plus/es/components/index.js";
 import userService from "../apis/userService";
-
 const newUserStore = userStore();
 const newLoginStore = loginStore();
 const dialogVisible_ = ref(false);
@@ -69,6 +73,15 @@ onMounted(async () => {
   tableData.push(newUser);
 });
 
+let lastDeletedData: User | null = null;
+
+const handleUndoLastDelete = async() => {
+  if (lastDeletedData) {
+    tableData.push(lastDeletedData);
+    contextService.add(newUserStore.userSession.name,lastDeletedData.context.valueOf());
+    lastDeletedData = null;
+  }
+};
 
 interface User {
   state: string
@@ -117,15 +130,24 @@ const handleDelete = (index: number) => {
    deleteindex.value = index;
   dialogVisible_.value = true;
 };
-const handleDelete_comfrim = async() => {
+  const handleDelete_comfrim = async() => {
   dialogVisible_.value = false;
-  tableData.splice(deleteindex.value,1);
-  await contextService.delete_(newUserStore.userSession.name,deleteindex.value);
+  lastDeletedData = tableData[deleteindex.value];
+  tableData.splice(deleteindex.value, 1);
+  await contextService.delete_(newUserStore.userSession.name, deleteindex.value);
 };
 </script>
 <style>
 .table{
   margin-left: 50px;
   margin-bottom: 300px;
+}
+
+.but{
+  margin-left: 1340px;
+}
+
+.a{
+  margin-bottom: -145px;
 }
 </style>
