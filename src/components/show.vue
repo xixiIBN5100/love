@@ -73,14 +73,15 @@ onMounted(async () => {
   tableData.push(newUser);
 });
 
-let lastDeletedData: User | null = null;
+let lastDeletedData: User;
 
 const handleUndoLastDelete = async() => {
   if (lastDeletedData) {
     tableData.push(lastDeletedData);
-    contextService.add(newUserStore.userSession.name,lastDeletedData.context.valueOf());
-    lastDeletedData = null;
+    lastDeletedData.context = "";
+    lastDeletedData.state = "";
   }
+  await contextService.return_(newUserStore.userSession.name,lastDeletedData.state,lastDeletedData.context);
 };
 
 interface User {

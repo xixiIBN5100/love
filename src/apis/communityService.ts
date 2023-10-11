@@ -8,7 +8,7 @@ export default class CommunityService{
 				"Content-Type": "application/json",
 			},
 			url:"/api/student/wall-artical",
-			method: "GET",
+			method: "get",
             params:{
                 id_:id,
             }
@@ -24,7 +24,7 @@ export default class CommunityService{
                 "Content-Type":"application/json",
             },
             url:"/api/student/wall-comment",
-            method:"POST",
+            method:"post",
             params:{
                 name_ : name,
                 content_:content,
