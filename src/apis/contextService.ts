@@ -61,23 +61,4 @@ export default class contextService {
 			data: updateconext
 		});
 	}
-
-	static async return_ (
-		owner_name: string,
-		state: string,
-		context: string,
-	) {
-		return request({
-			"headers": {
-				"Content-Type": "application/json",
-			},
-			url:"/api/student/wall-artical/updata",//不存在的接口
-			method: "post",
-			data:{
-				owner_name,
-		        state,
-				context
-			}
-		});
-	}
 }
