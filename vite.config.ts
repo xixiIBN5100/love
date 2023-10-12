@@ -6,7 +6,11 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     proxy: {
-      "/api": "http://175.27.251.203:8080"
+      '/api': {
+        target: 'http://175.27.251.203:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
     }
   }
 })

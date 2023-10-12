@@ -18,42 +18,38 @@ export default class contextService {
 			"headers": {
 				"Content-Type": "application/json",
 			},
-			url:"/api/student/wall-artical/search",
+			url:"/api/student/wall-artical",
 			method: "get",
 		});
 	}
 	static async delete_ (
-		owner_name: string,
-		index: number,
+		artical_id: string,
 	) {
 		return request({
 			"headers": {
 				"Content-Type": "application/json",
 			},
-			url:"/api/student/wall-artical/delete",
+			url:"/api/student/wall-artical",
 			method: "delete",
 			params: {
-				name: owner_name,
-				id: index
+				artical_id
 			}
 		});
 	}
 	static async update_ (
-		owner_name: string,
-		index: number,
-		updateconext: string,
+		artical_id: string,
+		artical: string,
 	) {
 		return request({
 			"headers": {
 				"Content-Type": "application/json",
 			},
-			url:"/api/student/wall-artical/updata",
+			url:"/api/student/wall-artical",
 			method: "put",
-			params: {
-				name: owner_name,
-				id: index,
-			},
-			data: updateconext
+			data: {
+				artical_id,
+				artical
+			}
 		});
 	}
 }

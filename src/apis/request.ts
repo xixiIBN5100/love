@@ -3,7 +3,8 @@ import axios, { AxiosRequestConfig } from "axios";
 const request = (config: AxiosRequestConfig<unknown>) => {
   const instance = axios.create({
     baseURL: "http://175.27.251.203:8080",
-    timeout: 1000
+    timeout: 1000,
+    withCredentials: true
   });
 
   const sessionId = localStorage.getItem("sessionId"); // 从localStorage 提取 Session ID
