@@ -11,7 +11,7 @@ const newLoginStore = loginStore();
 const newadministratorStore = AdministratorStore();
 const { loginSession } = storeToRefs(newLoginStore);
 const { userSession } = storeToRefs(newUserStore);
-const isName = localStorage.getItem("name");
+const name = newUserStore.userSession.name;
 const activeIndex = ref("1");
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
@@ -23,9 +23,10 @@ const pushToOut = () => {
   loginSession.value = false;
   userSession.value = {
     name: "未登录",
-    username: "未登录",
+    account: "未登录",
     sex: "未登录",
     major: "未登录",
+    user_id: "未登录"
   };
   router.push("/Login");
 };
@@ -91,7 +92,7 @@ const pushToCommunity = ()=>{
   </el-breadcrumb>
       <div v-show="newLoginStore.loginSession" :key="2">
         <div style="display: flex ; flex-direction:row">
-          <p>亲爱的{{isName}},欢迎回来&ensp;&ensp;</p>
+          <p>亲爱的{{name}},欢迎回来&ensp;&ensp;</p>
         </div>
       </div>
   </el-menu>

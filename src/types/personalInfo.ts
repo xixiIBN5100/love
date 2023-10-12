@@ -1,15 +1,16 @@
 //store中存的个人信息
 export interface userInfo {
 	name: string,
-	username: string,
+	account: string,
 	sex: string,
-	major: string
+	major: string,
+	user_id: string,
 }
 
 //新建表白内容
 export interface addInfo {
-	name: string,
-	context: string,
+	artical: string,
+	name_state: boolean,
 }
 
 export interface signInfo {

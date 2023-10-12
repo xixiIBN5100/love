@@ -16,8 +16,5 @@ const AdministratorStore = defineStore(
             SessionID,
 		};
 	},
-	{
-		persist: true,
-	}
 );
 export default AdministratorStore;

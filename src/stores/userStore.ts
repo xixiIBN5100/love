@@ -7,16 +7,18 @@ const userStore = defineStore(
 	() => {
 		const userSession = reactive({
 			name: "未登录",
-			username: "未登录",
+			account: "未登录",
 			sex: "未登录",
 			major: "未登录",
+			user_id: "未登录"
 		});
 
 		const setUserInfo = (info: userInfo) : void => {
 			userSession.name = info.name;
-			userSession.username = info.username;
+			userSession.account = info.account;
 			userSession.sex = info.sex;
 			userSession.major = info.major;
+			userSession.user_id = info.user_id;
 		};
 
 		return {

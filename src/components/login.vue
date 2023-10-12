@@ -15,9 +15,6 @@
           class="input"
         />
       </el-form-item>
-      <el-form-item label="密钥">
-        <el-input v-model="inputkey" placeholder="请输入您的密钥" class="input" />
-      </el-form-item>
       <el-row justify="center">
         <el-col :span="12">
           <el-button type="primary" @click="login" class="button">登录</el-button>
@@ -60,35 +57,32 @@ const login= async () => {
   }
 
   const loginInfo = ref({
-    username: input.value,
+    account: input.value,
     password: password.value,
-    key: inputkey.value
   });
   const res = await userService.login(loginInfo.value);
 if (res.data.msg === "OK" && res.data.code === 200) {
-  const responseData = res.data.data;
-  const message = "亲爱的" + responseData.username + ",欢迎回来！";
+  const responseData = res.data.data.list;
+  const message = "亲爱的" + responseData.name + ",欢迎回来！";
   ElNotification({
     title: "登陆成功！",
     message: h("i", { style: "color: teal" }, message),
   });
-  localStorage.setItem("login", String(true));//先本地仓库设置登录状态,路由守卫调用
-  if(res.data.flag===false)//是普通用户
+  if(responseData.manager_state===false)//是普通用户
   {
   newLoginStore.setLogin(true);
-  console.log("登录状态"+newLoginStore.loginSession);
-  localStorage.setItem("name", String(responseData.name));
   newUserStore.setUserInfo({
     name: responseData.name,
-    username: responseData.username,
+    account: responseData.account,
     sex: responseData.sex,
-    major: responseData.major
+    major: responseData.major,
+    user_id: responseData.user_id
   });
   router.push("/add");//推向用户页面
 }else{//是管理员
   //session鉴权
   newadministratorStore.setLogin(true);
-  newadministratorStore.SessionID = res.data.sessionID;//更新session id
+  newadministratorStore.SessionID = responseData.sessionID;//更新session id
   router.push("/administrator");//推向管理员页面
   }
 }
@@ -117,7 +111,6 @@ else if (res.data.msg === "用户不存在" && res.data.code === 200502) {
 const clear = () => {
   input.value = "";
   password.value = "";
-
   emit("clear","清空啦");
 };
 </script>

@@ -119,7 +119,6 @@ const handleEdit = (index: number, row: User) => {
 };
 
 const saveEditedData = async() => {
-  console.log("Save edited data:", editedRow.value);
   Object.assign(tableData[editedRowIndex.value], editedRow.value);//更新修改后的数据
   dialogVisible.value = false;
   await contextService.update_(newUserStore.userSession.name,deleteindex.value,editedRow.value.context);
@@ -127,7 +126,7 @@ const saveEditedData = async() => {
 };
 const deleteindex = ref(-1);
 const handleDelete = (index: number) => {
-   deleteindex.value = index;
+  deleteindex.value = index;
   dialogVisible_.value = true;
 };
   const handleDelete_comfrim = async() => {

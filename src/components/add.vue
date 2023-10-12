@@ -8,14 +8,12 @@ import { ElMessage, ElMessageBox } from "element-plus";
 const newUserStore = userStore();
 
 const form = reactive({
-  name: newUserStore.userSession.name,
-  context:"",
+  artical:"",
   name_state: true,//ture为实名表白,false为匿名表白
 });
-
+const res = await contextService.add(form);
 const onSubmit = async () => {
-  if (form.context !== "") {
-    const res = await contextService.add(form);
+  if (form.artical !== "") {
     if (res.data.code === 200 && res.data.msg === "OK") {
       ElMessageBox.confirm(
     "请确认表白内容无误且为实名表白",
@@ -117,15 +115,13 @@ const anonymous = () => {
   };
 
 const clear = () => {
-  form.context = "";
+  form.artical = "";
   form.name_state = true;
-  form.name = "";
 };
 
 const clear_ = () => {
-  form.context = "";
+  form.artical = "";
   form.name_state = true;
-  form.name = "";
   ElNotification({
         title: "冷静成功",
         message: h("i", { style: "color: teal" }, "小子,冷静一下"),
@@ -143,7 +139,7 @@ const clear_ = () => {
     </div>
     <el-form :model="form" label-width="90px">
       <el-form-item label="你想对TA说" >
-        <el-input v-model="form.context"  type="textarea"/>
+        <el-input v-model="form.artical"  type="textarea"/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit" class="button">表白!</el-button>

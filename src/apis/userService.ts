@@ -3,9 +3,8 @@ import {signInfo} from "../types/personalInfo.ts";
 
 export default class userService {
 	static async login(data_: {
-		username: string,
-		password: string
-		key: string,
+		account: string,
+		password: string,
 	}) {
 		return request({
 			"headers": {

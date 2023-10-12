@@ -13,18 +13,13 @@ export default class contextService {
 		});
 	}
 
-	static async show (
-		owner_name: string
-	) {
+	static async show (){
 		return request({
 			"headers": {
 				"Content-Type": "application/json",
 			},
 			url:"/api/student/wall-artical/search",
 			method: "get",
-			params: {
-				name: owner_name
-			}
 		});
 	}
 	static async delete_ (
