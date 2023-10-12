@@ -8,12 +8,14 @@ import { ElMessage, ElMessageBox } from "element-plus";
 const newUserStore = userStore();
 
 const form = reactive({
+  user_id: newUserStore.userSession.user_id,
   artical:"",
   name_state: true,//ture为实名表白,false为匿名表白
 });
-const res = await contextService.add(form);
+
 const onSubmit = async () => {
   if (form.artical !== "") {
+    const res = await contextService.add(form);
     if (res.data.code === 200 && res.data.msg === "OK") {
       ElMessageBox.confirm(
     "请确认表白内容无误且为实名表白",
