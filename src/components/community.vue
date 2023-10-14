@@ -1,96 +1,150 @@
 <template>
   <div class="contain">
     <div style="margin-bottom: 15px">fill: <el-switch v-model="fill" /></div>
+    <el-button @click="getdata">刷新</el-button>
     <el-space :fill="fill" wrap>
-      <el-card v-for="i in 3" :key="i" class="box-card">
-          <div style="font-size: medium;">
-            <span>name</span>
-          </div>
-        <el-scrollbar style="size: medium;">
-          <span v-for="item in datafilter" :key="item.id">{{ item.content }}</span>
+      <el-card v-for="(article) in articles" :key="article.id" class="box-card">
+        <div style="font-size: medium;">
+          <span>{{ article.Name }}</span>
+        </div>
+        <el-scrollbar style="height: 100px;">
+          <span>{{ article.artical }}</span>
+          <div v-show="showCommentInput &&  article.Name===nowAuthor">
+             <el-input style="margin-top: 43px;" v-model="commentInputValue" placeholder="说点什么吧" clearable />
+        </div>
         </el-scrollbar>
         <el-divider />
+        <el-button @click="showCommentInput_(article.id)" style="margin-top: 25px;">
+          评论</el-button>
+        <el-button v-if="showCommentButton" @click="addComment(article.id)" style="margin-top: 25px;">上传</el-button>
         <el-scrollbar max-height="400px">
-          <div v-if="showinput">
-            <el-input v-model="inputvalue" clearable />
+          <div v-for="(comment, commentIndex) in article.comments" :key="commentIndex"
+           type="textarea">
+            <div v-for="(line, lineIndex) in comment.artical" :key="lineIndex" 
+            v-show="comment.name === nowAuthor">
+              {{ line }}
+            </div>
           </div>
-                <div v-for="item in Datafiter" :key="item.id" type="textarea" placeholder="说点什么吧">
-                  <el-button @click="Showinput" style="margin-top: 25px;">评论</el-button>
-                  <el-button v-if="showButton" @click="add" style="margin-top: 25px;">上传</el-button>
-                  <span v-for="(comment, index) in item.comments" :key="index" class="scrollbar-demo-item">
-                    {{ comment }}
-                  </span>
-                  <br />
-                </div>
         </el-scrollbar>
       </el-card>
     </el-space>
   </div>
 </template>
+
 <script setup lang="ts">
-import router from "../routers";
 import { ref, computed } from "vue";
-import communityService from "../apis/communityService";
-const data = ref([
+import CommunityService from "../apis/communityService";
+import axios from "axios";
+interface Article {
+  id: number;
+  Name: string;
+  artical: string;
+  comments: Comment[];
+}
+
+interface Comment {
+  name: string;
+  artical: string[];
+}
+
+const articles = ref<Article[]>([
   {
-    content:"i love you",
-  }
-]);
-const datafilter = computed(()=>{
-  return data.value.filter(item=>{
-    return (
-      item.content
-    );
-  });
-});
-const Data =ref([
+    id: 1,
+    Name: "tom",
+    artical: "i love you",
+    comments: [
+      { name: "tom", artical: ["you are so brave", "hello"]},
+      { name: "jack", artical: [] },
+    ],
+  },
   {
-    comments:[
-      "you are so brave",
-      "well done",
-    ]
-  }
+    id: 2,
+    Name: "jack",
+    artical: "i miss you",
+    comments: [
+      { name: "tom", artical: [] },
+      { name: "jack", artical: ["well done"] },
+    ],
+  },
 ]);
-const Datafiter = computed(()=>{
-  return Data.value.filter(item=>{
-    return(
-      item.comments
-    );
-  });
-});
-const showinput=ref(false);
-const inputvalue=ref(" ");
-const Showinput = async()=>{{
-    showinput.value=true;
+const getdata = async (id: number) => {
+  // 检查id是否有效
+  if (id <= 0 || id > articles.value.length) {
+    console.error(`Invalid id: ${id}`);
+    return;
   }
-  const commentConent = ref({
-    name:"李华",
-    content:inputvalue.value
-  });
-  const { name, content } = commentConent.value;
-  const res = await communityService.push(name, content);
+
+  const index = id - 1;
+  const article = articles.value[index];
+
+  // 检查article对象是否有效
+  if (!article) {
+    console.error(`Article not found: ${id}`);
+    return;
+  }
+
+  const res = await CommunityService.refer(articles.value[index].artical);
+  const articalList = res.data.artical_list;
+  const articalData = articalList[index];
+
+  // 检查articalData是否存在，并为article对象添加artical属性
+  if (articalData) {
+    article.artical = articalData.artical;
+    article.Name = articalData.name;
+    console.log(article.Name);
+    console.log(article.artical);
+  }
+  else {
+    console.error(`Artical not found: ${id}`);
+  }
 };
+
+const showCommentInput = ref(false);
+const commentInputValue = ref("");
 const fill = ref(true);
-function add() {
-  if (inputvalue.value.trim() !== "") {
-    const newcomment = {
-      id: Data.value[0].comments.length + 1,
-      content: inputvalue.value,
+const nowAuthor = ref("tom");
+const showCommentInput_ = async (num: number) => {
+  const index = num - 1;
+  const article = articles.value[index];
+  nowAuthor.value = article.Name;
+  showCommentInput.value = !showCommentInput.value;
+};
+async function addComment(articleId: number) {
+  if (commentInputValue.value.trim() !== "") {
+    const newComment = {
+      name: articles.value[articleId - 1].Name,
+      artical: commentInputValue.value.trim(),
     };
-    Data.value[0].comments.push(newcomment.content);
-    inputvalue.value = " ";
-    showinput.value = false;
+    articles.value[articleId - 1].comments.push({
+      name: newComment.name,
+      artical: [newComment.artical],
+    });
+    nowAuthor.value = newComment.name;
+    commentInputValue.value = "";
+    try {
+      await axios.post("/api/student/wall-comment", newComment);
+      // 将评论发送到后端数据库
+      showCommentInput.value = false;
+      // 从后端数据库获取评论并展示
+      const response = await axios.get("/api/student/wall-comment/artical-comment");
+      const comments = response.data;
+      console.log(comments.value);
+      // 处理从后端返回的评论数据，例如更新视图等操作
+    } catch (error) {
+      // 错误处理
+      console.error("提交评论失败", error);
+    }
   }
 }
-const showButton = computed(() => {
-  return inputvalue.value.trim() !== " ";
+
+const showCommentButton = computed(() => {
+  return commentInputValue.value.trim() !== "";
 });
 </script>
 <style scoped>
 .scrollbar-demo-item {
   display: flex;
   align-items: center;
-  justify-content: center;
   height: 50px;
   margin: 20px;
   text-align: center;

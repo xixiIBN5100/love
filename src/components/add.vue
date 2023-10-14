@@ -8,13 +8,30 @@ import { ElMessage, ElMessageBox } from "element-plus";
 const newUserStore = userStore();
 
 const form = reactive({
-  user_id: newUserStore.userSession.user_id,
-  artical:"",
+  name: newUserStore.userSession.name,
+  context:"",
   name_state: true,//ture为实名表白,false为匿名表白
+  artical: "",
 });
 
+const showConfirmDialog=()=> {
+    const msg = form.name_state ? "请确认表白内容无误且为实名表白" : "请确认表白内容无误且为匿名表白";
+    ElMessageBox.confirm(msg, {
+      confirmButtonText: "OK",
+      cancelButtonText: "Cancel",
+      type: "warning",
+    }).then(() => {
+      onSubmit();
+    }).catch(() => {
+      ElMessage({
+        type: "info",
+        message: "取消成功",
+      });
+    });
+  };
 const onSubmit = async () => {
-  if (form.artical !== "") {
+  if (form.context !== "") {
+    form.artical = form.context;
     const res = await contextService.add(form);
     if (res.data.code === 200 && res.data.msg === "OK") {
       ElMessageBox.confirm(
@@ -88,7 +105,7 @@ const onSubmit = async () => {
 };
 const state = ref("实名状态");
 const condition = ref("我要匿名");
-watch(condition, (newValue) => {
+watch(condition, (newValue:string) => {
   if (newValue === "我要匿名") {
     state.value = "实名状态";
   }else{
@@ -117,13 +134,15 @@ const anonymous = () => {
   };
 
 const clear = () => {
-  form.artical = "";
+  form.context = "";
   form.name_state = true;
+  form.name = "";
 };
 
 const clear_ = () => {
-  form.artical = "";
+  form.context = "";
   form.name_state = true;
+  form.name = "";
   ElNotification({
         title: "冷静成功",
         message: h("i", { style: "color: teal" }, "小子,冷静一下"),
@@ -141,10 +160,10 @@ const clear_ = () => {
     </div>
     <el-form :model="form" label-width="90px">
       <el-form-item label="你想对TA说" >
-        <el-input v-model="form.artical"  type="textarea"/>
+        <el-input v-model="form.context"  type="textarea"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit" class="button">表白!</el-button>
+        <el-button type="primary" @click="showConfirmDialog" class="button">表白!</el-button>
         <el-button class="button" @click="clear_">冷静一下</el-button>
         <el-button class="button" @click="anonymous">
           <i :class="{'el-icon-user-solid': form.name_state, 'el-icon-user': !form.name_state}"></i>
