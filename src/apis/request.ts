@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 
 const request = (config: AxiosRequestConfig<unknown>) => {
   const instance = axios.create({
-    baseURL: "http://175.27.251.203:8080",
+    baseURL: "https://mock.apifox.com/m1/3329798-0-default",
     timeout: 1000,
     withCredentials: true
   });

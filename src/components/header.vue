@@ -11,7 +11,6 @@ const newLoginStore = loginStore();
 const newadministratorStore = AdministratorStore();
 const { loginSession } = storeToRefs(newLoginStore);
 const { userSession } = storeToRefs(newUserStore);
-const name = newUserStore.userSession.name;
 const activeIndex = ref("1");
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
@@ -26,13 +25,13 @@ const pushToOut = () => {
     account: "未登录",
     sex: "未登录",
     major: "未登录",
-    user_id: "未登录"
+    user_id: -1
   };
   router.push("/Login");
 };
 const state = computed(() => {
   if (newLoginStore.loginSession) {
-    return "用户中心";
+    return "关于表白";
   } else if(newadministratorStore.administrator_loginSession){
     return "管理中心";
   }else{
@@ -75,9 +74,8 @@ const pushToCommunity = ()=>{
   >
   <el-sub-menu index="2">
       <template #title>{{ state }}</template>
-      <el-menu-item index="2-1" @click="pushToAdd" v-show="newLoginStore.loginSession">我要表白</el-menu-item>
-      <el-menu-item index="2-2" @click="pushToShow"  v-show="newLoginStore.loginSession">查看表白</el-menu-item>
-      <el-menu-item index="2-3" @click="pushToCommunity"  v-show="newLoginStore.loginSession">社区</el-menu-item>
+      <el-menu-item index="2-1" @click="pushToAdd" v-show="newLoginStore.loginSession">发布表白</el-menu-item>
+      <el-menu-item index="2-2" @click="pushToShow"  v-show="newLoginStore.loginSession">我的表白</el-menu-item>
       <el-menu-item index="2-1" @click="pushToadministrator" v-show="newadministratorStore.administrator_loginSession">管理表白</el-menu-item>
       <el-menu-item index="2-2" @click="pushToadministrator_"  v-show="newadministratorStore.administrator_loginSession">管理用户</el-menu-item>
     </el-sub-menu>
@@ -90,9 +88,13 @@ const pushToCommunity = ()=>{
       退出登录</el-breadcrumb-item>
     <el-breadcrumb-item style="font-size: 25px;"></el-breadcrumb-item>
   </el-breadcrumb>
+  <el-sub-menu index="3">
+      <template #title>关于社区</template>
+      <el-menu-item index="3-1" @click="pushToCommunity"  v-show="newLoginStore.loginSession || newadministratorStore.administrator_loginSession">进入社区</el-menu-item>
+      <el-menu-item index="3-2" @click="pushToCommunity"  v-show="newLoginStore.loginSession">我的信息</el-menu-item>
+    </el-sub-menu>
       <div v-show="newLoginStore.loginSession" :key="2">
         <div style="display: flex ; flex-direction:row">
-          <p>亲爱的{{name}},欢迎回来&ensp;&ensp;</p>
         </div>
       </div>
   </el-menu>

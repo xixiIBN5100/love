@@ -3,10 +3,10 @@
   <div class="login-box">
     <h2 class="msg">{{ msg }}</h2>
     <el-form>
-      <el-form-item label="*账号">
+      <el-form-item label="账号">
         <el-input v-model="input" placeholder="请输入您的账号" class="input" />
       </el-form-item>
-      <el-form-item label="*密码">
+      <el-form-item label="密码">
         <el-input
           v-model="password"
           type="password"
@@ -14,6 +14,9 @@
           show-password
           class="input"
         />
+      </el-form-item>
+      <el-form-item label="密钥"  >
+        <el-input v-model="key" placeholder="选填"/>
       </el-form-item>
       <el-row justify="center">
         <el-col :span="12">
@@ -36,10 +39,11 @@ import userStore from "../stores/userStore.ts";
 import { ElNotification } from "element-plus";
 import router from "../routers";
 import AdministratorStore from "../stores/administratorStore";
+import { keysOf } from "element-plus/es/utils/objects.js";
 
 const input = ref("");
 const password = ref("");
-const inputkey = ref("");
+const key = ref("");
 const newLoginStore = loginStore();
 const newUserStore = userStore();
 const newadministratorStore = AdministratorStore();
@@ -59,6 +63,7 @@ const login= async () => {
   const loginInfo = ref({
     account: input.value,
     password: password.value,
+    key: key.value,
   });
   const res = await userService.login(loginInfo.value);
 if (res.data.msg === "OK" && res.data.code === 200) {
@@ -113,6 +118,7 @@ const clear = () => {
   password.value = "";
   emit("clear","清空啦");
 };
+console.log(newUserStore);
 </script>
 
 <style scoped>

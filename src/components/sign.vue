@@ -11,7 +11,6 @@ const form = reactive({
   major: "",
   password: "",
   confirm_password: "",
-  key: "",
 });
 
 const onSubmit = async () => {
@@ -94,9 +93,6 @@ const clear = () => {
       </el-form-item>
       <el-form-item label="*确认密码">
         <el-input v-model="form.confirm_password" />
-      </el-form-item>
-      <el-form-item label="密钥">
-        <el-input v-model="form.key" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit" class="button">注册</el-button>

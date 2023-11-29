@@ -10,7 +10,7 @@ const userStore = defineStore(
 			account: "未登录",
 			sex: "未登录",
 			major: "未登录",
-			user_id: "未登录"
+			user_id: -1
 		});
 
 		const setUserInfo = (info: userInfo) : void => {

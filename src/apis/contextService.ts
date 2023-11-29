@@ -13,17 +13,21 @@ export default class contextService {
 		});
 	}
 
-	static async show (){
+	static async show ( user_id: number ){
 		return request({
 			"headers": {
 				"Content-Type": "application/json",
 			},
-			url:"/api/student/wall-artical",
-			method: "get",
+			url:"/api/student/wall-artical/my",
+			method: "post",
+			data:{
+				user_id
+			}
 		});
 	}
 	static async delete_ (
-		artical_id: string,
+		user_id: number,
+		artical_id: number,
 	) {
 		return request({
 			"headers": {
@@ -31,13 +35,15 @@ export default class contextService {
 			},
 			url:"/api/student/wall-artical",
 			method: "delete",
-			params: {
-				artical_id
+			data:{
+				user_id,
+				artical_id,
 			}
 		});
 	}
 	static async update_ (
-		artical_id: string,
+		user_id: number,
+		artical_id: number,
 		artical: string,
 	) {
 		return request({
@@ -48,7 +54,8 @@ export default class contextService {
 			method: "put",
 			data: {
 				artical_id,
-				artical
+				artical,
+				user_id,
 			}
 		});
 	}

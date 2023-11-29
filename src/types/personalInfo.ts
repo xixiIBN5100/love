@@ -4,13 +4,14 @@ export interface userInfo {
 	account: string,
 	sex: string,
 	major: string,
-	user_id: string,
+	user_id: number,
 }
 
 //新建表白内容
 export interface addInfo {
 	artical: string,
 	name_state: boolean,
+	user_id:number,
 }
 
 export interface signInfo {

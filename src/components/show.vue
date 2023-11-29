@@ -1,15 +1,12 @@
 <template>
   <div class="but">
-  <el-button class = "a" v-if="lastDeletedData" size="small" type="info" @click="handleUndoLastDelete">
-      撤回
-    </el-button>
   </div>
   <el-table :data="filterTableData" style="width: 100%" class="table">
     <el-table-column label="表白状态" prop="state" />
     <el-table-column label="表白内容" prop="context" />
     <el-table-column align="right">
       <template #header>
-        <el-input v-model="search" size="small" placeholder="Type to search" />
+        <el-input v-model="search" size="small" placeholder="Type to search context" />
       </template>
       <!-- #default 是作用域插槽的名称，它表示默认的插槽，即没有特定名称的插槽。"scope" 是作用域插槽的参数，它表示在父组件中传递给子组件的数据。
       在这段代码中，作用域插槽的参数 scope 包含了父组件传递给子组件的数据。在模板中，你可以通过 scope 对象来访问这些数据。
@@ -38,11 +35,11 @@
     </template>
   </el-dialog>
   <el-dialog v-model="dialogVisible_" title="删除" width="30%" draggable>
-    <el-text class="mx-1" type="danger">此操作可逆</el-text>
+    <span style="color: red;">确认要删除吗</span>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible_ = false">取消</el-button>
-        <el-button type="primary" @click="handleDelete_comfrim()">
+        <el-button type="danger" @click="handleDelete_comfrim()">
           确认删除
         </el-button>
       </span>
@@ -54,64 +51,37 @@
 import { computed, reactive, ref ,onMounted} from "vue";
 import contextService from "../apis/contextService";
 import { ElMessage } from "element-plus";
-import loginStore from "../stores/loginStore";
 import userStore from "../stores/userStore";
-import { rowContextKey } from "element-plus/es/components/index.js";
-import userService from "../apis/userService";
 const newUserStore = userStore();
-const newLoginStore = loginStore();
 const dialogVisible_ = ref(false);
+const responselist = reactive<User[]>([]);
 onMounted(async () => {
-  const response = await contextService.show(newUserStore.userSession.name);
-  const mydata = response.data; // 返回的数据在response的data属性中
-  // 创建新的User对象
-  const newUser = {
-    state: mydata.state,
-    context: mydata.context,
-  };
-  // 将newUser插入到tableData数组中
-  tableData.push(newUser);
+  const response = await contextService.show(newUserStore.userSession.user_id);
+  // 将从服务端获取的数据列表 response.data.list 赋值给 tableData
+  responselist.splice(0, responselist.length, ...response.data.data.list);
+  console.log(responselist);
+  console.log(response.data.data.list);
 });
-
+console.log(responselist);
 let lastDeletedData: User | null = null;
-
-const handleUndoLastDelete = async() => {
-  if (lastDeletedData) {
-    tableData.push(lastDeletedData);
-    contextService.add(newUserStore.userSession.name,lastDeletedData.context.valueOf());
-    lastDeletedData = null;
-  }
-};
-
 interface User {
   state: string
   context: string
+  articl_id: number
 }
 
-const tableData: User[] = reactive([
-  {
-    state: "匿名状态",
-    context: "博爱",
-  },
-  {
-    state: "实名状态",
-    context: "我博爱",
-  },
-]);
-
 const search = ref("");
-const filterTableData = computed(() =>
-  tableData.filter(
-    (data) =>
-      !search.value ||
-      data.context.toLowerCase().includes(search.value.toLowerCase())
-  )
-);
+ const filterTableData = computed(() =>
+ responselist.filter(
+     (data) =>
+       !search.value ||
+       data.context.toLowerCase().includes(search.value.toLowerCase())
+   )
+ );
 
 const dialogVisible = ref(false);
-const editedRow = ref<User>({state: "", context: ""});
+const editedRow = ref<User>({state: "", context: "",articl_id: -1});
 const editedRowIndex = ref(-1);
-
 const handleEdit = (index: number, row: User) => {
   dialogVisible.value = true;
   editedRowIndex.value = index;
@@ -119,9 +89,9 @@ const handleEdit = (index: number, row: User) => {
 };
 
 const saveEditedData = async() => {
-  Object.assign(tableData[editedRowIndex.value], editedRow.value);//更新修改后的数据
+  Object.assign(responselist[editedRowIndex.value], editedRow.value);//更新修改后的数据
   dialogVisible.value = false;
-  await contextService.update_(newUserStore.userSession.name,deleteindex.value,editedRow.value.context);
+   await contextService.update_(newUserStore.userSession.user_id,editedRow.value.articl_id,editedRow.value.context);
   ElMessage.success("保存成功！");
 };
 const deleteindex = ref(-1);
@@ -131,9 +101,9 @@ const handleDelete = (index: number) => {
 };
   const handleDelete_comfrim = async() => {
   dialogVisible_.value = false;
-  lastDeletedData = tableData[deleteindex.value];
-  tableData.splice(deleteindex.value, 1);
-  await contextService.delete_(newUserStore.userSession.name, deleteindex.value);
+  lastDeletedData = responselist[deleteindex.value];
+  responselist.splice(deleteindex.value, 1);
+  await contextService.delete_(newUserStore.userSession.user_id, lastDeletedData.articl_id);
 };
 </script>
 <style>
@@ -150,3 +120,4 @@ const handleDelete = (index: number) => {
   margin-bottom: -145px;
 }
 </style>
+
